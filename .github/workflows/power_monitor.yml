@@ -1,0 +1,36 @@
+name: Power Monitor
+
+on:
+  schedule:
+    # Запускається кожні 5 хвилин (UTC)
+    - cron: "*/5 * * * *"
+  workflow_dispatch: {} # Дозволяє запустити вручну кнопкою в Actions
+
+jobs:
+  monitor:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install requests python-telegram-bot
+
+      - name: Run monitoring wave
+        env:
+          TZ: Europe/Kyiv
+          BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
+          CHAT_ID: ${{ secrets.CHAT_ID }}
+          TUYA_CLIENT_ID: ${{ secrets.TUYA_CLIENT_ID }}
+          TUYA_CLIENT_SECRET: ${{ secrets.TUYA_CLIENT_SECRET }}
+          TUYA_DEVICE_ID: ${{ secrets.TUYA_DEVICE_ID }}
+          GIST_ID: ${{ secrets.GIST_ID }}
+          GIST_TOKEN: ${{ secrets.GIST_TOKEN }}
+        run: python monitor_action.py
